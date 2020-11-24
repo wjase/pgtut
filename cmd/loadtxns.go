@@ -51,6 +51,7 @@ func main() {
 	var wg sync.WaitGroup
 
 	for w := 0; w < workerCount; w++ {
+		workerNum := w
 		go func() {
 			var wrkerSource = rand.New(rsource)
 			for true {
@@ -65,7 +66,7 @@ func main() {
 						}
 					}()
 				} else {
-					fmt.Printf("Terminating worker...")
+					fmt.Printf("Terminating worker...%d\n", workerNum)
 					break
 				}
 			}
@@ -81,21 +82,24 @@ func main() {
 	elapsed := time.Since(start)
 	log.Printf("Insert of %d records took %s", numRecords, elapsed)
 	close(workChan)
-	selectQuery := `SELECT
-	    transaction_date AS day,
-	    loc_id,
-	    SUM(amount1) as amount1_sum,
-	    SUM(amount2) as amount2_sum,
-	    SUM(amount3) as amount3_sum,
-	    SUM(amount4) as amount4_sum,
-	    COUNT(loc_id) as item_count
-	FROM public.transactions
-	where day= TO_DATE('2020-11-20','YYYY-MM-DD')
-	GROUP BY loc_id,transaction_date;`
+	// selectQuery := `SELECT
+	//     transaction_date AS day,
+	//     loc_id,
+	//     SUM(amount1) as amount1_sum,
+	//     SUM(amount2) as amount2_sum,
+	//     SUM(amount3) as amount3_sum,
+	//     SUM(amount4) as amount4_sum,
+	//     COUNT(loc_id) as item_count
+	// FROM public.transactions
+	// where day= TO_DATE('2020-11-20','YYYY-MM-DD')
+	// GROUP BY loc_id,transaction_date;`
 
-	_, err = db.Exec(insertText)
+	// _, err = db.Exec(selectQuery)
 }
 
+var mu sync.Mutex
 func rndAmount(r *rand.Rand) string {
+	mu.Lock()
+	defer mu.Unlock()
 	return fmt.Sprintf("%d.%d", r.Intn(100), r.Intn(99))
 }

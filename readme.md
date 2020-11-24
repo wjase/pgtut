@@ -26,7 +26,7 @@ Can be found in the ```cmd``` folder
     CREATE ROLE dbadmin WITH CREATEDB CREATEROLE LOGIN  PASSWORD 'bob';
 
 # create a USER ROLE
-    CREATE ROLE dbuser WITH LOGIN;        
+    CREATE ROLE dbuser WITH LOGIN;
 
 # create a USER 
     CREATE ROLE some_user IN ROLE dbuser WITH LOGIN PASSWORD 'bob';
